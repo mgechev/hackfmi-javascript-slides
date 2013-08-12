@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>JavaScript Patterns</title>
+
+    <meta charset='utf-8'>
+    <script src='src/slides.js'></script>
+  </head>
+  
+  <body style='display: none'>
+
+    <section class='slides layout-regular template-default'>
+      
+      <article>
+        <h1>JavaScript Good Practices</h1>
+        <h4>Minko Gechev</h4>
+      </article>
+
+      <article>
+        <ul>
+          <li><a href="http://github.com/mgechev" target="_blank">github.com/mgechev</a></li>
+          <li><a href="http://twitter.com/mgechev" target="_blank">twitter.com/mgechev</a></li>
+          <li><a href="http://blog.mgechev.com/" target="_blank">blog.mgechev.com</a></li>
+        </ul>
+        <img src="images/web.jpg" alt="" style="margin-left: 300px;" />
+      </article>
+
+      <article class="fill current">
+        <h3>...Aahhh...JavaScript</h3>
+        <img src="images/gollum.jpg" alt="" />
+      </article>
+
+      <article>
+        <img src="images/agenda.png" alt="" style="float: right; margin: 70px;" />
+        <ul class="build">
+            <li>Why we should be careful with JavaScript?</li>
+            <li>Inheritance</li>
+            <li>Immediately-Invoked Function Expression (IIFE)</li>
+            <li>Module pattern</li>
+            <li>Publish/subscribe</li>
+            <li>UI frameworks</li>
+            <li>Deployment</li>
+        </ul> 
+      </article>
+
+      <article>
+        <h3>Few examples...</h3>
+        <pre>
+            ',,' == new Array(3) //true
+
+            [1,2,3] == [1,2,3] //false, different references
+            [1,2,3] === [1,2,3] //false, different references
+            [1,2,3] &gt; [1,2,3] //false
+            [1,2,3] &lt; [1,2,3] //false
+            [1,2,3] &gt;= [1,2,3] //true
+            [1,2,3] &lt;= [1,2,3] //true
+
+            typeof undefined === 'undefined' //true
+            typeof null      === 'object' //true
+            
+            +!+[] //1
+
+            0.1 + 0.2 === 0.3 //false
+
+        </pre>
+      </article>
+
+      <article>
+        <h3>JavaScript is weird...</h3>
+        <pre>
+            "Why am I a " + typeof + ""; // "Why am I a number"
+
+            //Why not...
+            ([]+[][+[]])[+!+[]+!+[]+!+[]+!+[]]
+            +([]+![])[+!+[]]+([]+[][+[]])[+!+[]
+            +!+[]+!+[]+!+[]+!+[]]+([]+![])[+!+[]+!+[]]
+
+            function foo() { //always returns undefined...
+                return
+                {
+                    bar: 'baz'
+                };
+            }
+
+            parseInt('wow'); //NaN
+            parseInt('fuck', 16); //15
+        </pre>        
+      </article>
+
+      <article>
+        <h3>No classes?! Using inheritance?!</h3>
+        <pre>
+
+            var parent = {
+                foobar: 'foobaz'
+            };
+
+            function Foo() {
+                this.bar = 'baz';
+            }
+            
+            Foo.prototype = parent;
+
+            var foo = Object.create(parent);
+            foo.bar = 'baz';
+
+            (new Foo()).__proto__ === foo.__proto__
+
+        </pre>
+      </article>
+
+      <article>
+        <img src="./images/crockford.jpg" alt="" style="margin: auto; display: block; margin-top: 35px;" />
+      </article>
+
+      <article>
+        <h2>Inheritance</h2>
+        <h3>Two approaches:</h3>
+        <ul class="build">
+           <li>(Pseudo) Classical</li>
+           <li>Prototypal</li>
+        </ul>
+      </article>
+
+      <article class="smaller">
+        <h2>Classical</h2>
+        CoffeeScript
+        <br />
+        <pre>
+            function Person(name) {
+                this._name = name;
+            }
+            Person.prototype.getName = function () {
+                return this._name;
+            };
+
+            function Developer(name, languages) {
+                Person.call(this, name);
+                this.languages = languages;
+            }
+            Developer.prototype = new Person();
+
+            var dev = new Developer('foo', ['JavaScript', 'Perl', 'Java']);
+            console.log(dev.getName());     //"foo"
+            console.log(dev._name);         //"foo"
+            console.log(dev.languages[0]);  //"JavaScript"
+        </pre>
+      </article>
+
+      <article>
+        <h2>Classical (+/-)</h2>
+        <ul class="build green">
+            <li>Looks familiar</li>
+        </ul>
+        <ul class="build red">
+            <li>No privacy (weak encapsulation)</li>
+            <li>Unnecessary complexity</li>
+        </ul>
+      </article>
+
+      <article class="smaller">
+        <h2>Functional/Closure inheritance</h2>
+        <pre>
+            function Person(name) {
+                var _name = name;
+                this.getName = function () {
+                    return _name;
+                };
+            }
+            function Developer(name, languages) {
+                var _languages = languages;
+                Person.call(name);
+                this.getLanguages = function () {
+                    return _languages;
+                };
+            }
+            Developer.prototype = new Person();
+            var dev = new Developer('foo', ['JavaScript', 'Perl', 'Java']);
+            console.log(dev._name);     //undefined
+            console.log(dev.getName()); //"foo"
+        </pre>
+      </article>
+
+      <article>
+        <h2>Functional (+/-)</h2>
+        <ul class="build green">
+            <li>Looks fairly familiar</li>
+            <li>Real privacy</li>
+        </ul>
+        <ul class="build red">
+            <li>Multiple copies of the methods</li>
+            <li>Complex</li>
+        </ul>
+      </article>
+ 
+      <article>
+        <h2>Prototypal</h2>
+        <pre>
+            var person = {
+                name: 'foo',
+                age: 42
+            };
+
+            var dev = Object.create(person);
+            dev.languages = ['JavaScript', 'Perl', 'Java'];
+
+            console.log(dev.name);         //"foo"
+            console.log(dev.languages[0]); //"JavaScript"
+        </pre>
+      </article>
+
+      <article>
+        <h2>Prototypal (+/-)</h2>
+        <ul class="build green">
+            <li>Simplicity</li>
+        </ul>
+        <ul class="build red">
+            <li>Looks strange</li>
+            <li>No privacy (*)</li>
+        </ul>
+      </article>
+
+  
+      <article class="smaller"> 
+        <h2>Polymorphism</h2>
+        <pre>
+            function Person(name) {
+                this._name = name;
+            }
+            Person.prototype.speak = function () {
+                return 'My name is ' + this._name + '.';
+            };
+            function Developer(name, languages) {
+                Person.call(this, name);
+                this.languages = languages || [];
+            }
+            Developer.prototype = new Person();
+            Developer.prototype.speak = function () {
+                return 'My name is ' + this._name + ' and I know ' + (this.languages[0] || 'nothing') + '.';
+            };
+            
+            var person = new Person('foo');
+            console.log(person.speak()); //"My name is foo and."
+            person = new Developer('foo', ['JavaScript', 'Perl', 'Java']);
+            console.log(person.speak()); //"My name is foo and I know JavaScript."
+        </pre>
+      </article>
+     
+      <article>
+        <h2>Immediately-Invoked Function Expression (IIFE)</h2>
+        <h3>Problem</h3>
+        <ul class="build">
+            <li>Initializing some stuff</li>
+            <li>Not polluting the global namespace</li>
+            <li>Doing the initialization only once</li>
+        </ul>
+      </article>
+
+      <article>
+        <h3>Sample solution (1)</h3>
+        <pre>
+            function addHandlers() {
+                //body
+            }
+            function performLayout() {
+                //body
+            }
+            addHandlers();
+            performLayout();
+        </pre>
+        <ul class="build">
+            <li class="red">Multiple globals</li>
+            <li class="red">Can be called multiple times</li>
+        </ul>
+      </article>
+
+      <article>
+       <h3>Sample solutions (2)</h3>
+       <pre>
+          //Variant 1
+          function init() {
+              function addHandlers() {
+              }
+              addHandlers();
+          }
+          init();
+       </pre>
+       <ul class="build">
+          <li class="red">Polluting the global namespace (1 global)</li>
+          <li class="red">Can be called multiple times</li>
+          <li class="red">Ugly</li>
+       </ul>
+      </article>
+
+      <article>
+        <h3>Sample solution (3)</h3>
+        <pre>
+           //Variant 2
+           var init = function () {
+               function addHandlers() {
+               }
+               addHandlers();
+           };
+           init();
+           delete window.init;
+       </pre>
+        <ul class="build">
+            <li class="red">Ugly</li>
+        </ul>
+      </article>
+
+      <article>
+        <h3>Solution</h3>
+        <pre>
+           ;(function (w, d) {
+               //initialization
+           }(window, document));
+        </pre>
+        <ul class="build">
+            <li class="green">Fixing all issues</li>
+            <li class="red">Hard to understand</li>
+        </ul>
+        <ul class="build">
+            <li>And yes, we <a href="http://jsdrama.com/" target="_blank">*always*</a> need the semicolons</li>
+        </ul>
+      </article>
+
+      <article>
+        <h3>Sample usage</h3>
+        <pre>
+    //Load facebook's SDK asynchronously
+    (function(d){
+        var js, id = 'facebook-jssdk',
+            refr = d.getElementsByTagName('script')[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement('script'); js.id = id; js.async = true;
+        js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+        refr.parentNode.insertBefore(js, refr);
+     }(document));
+        </pre>
+      </article>
+
+      <article>
+        <h3>Namespace function</h3>
+        <pre>
+    function namespace(namespaceString) {
+        var parts = namespaceString.split('.'),
+            parent = window,
+            currentPart = '';    
+            
+        for(var i = 0, length = parts.length; i &lt; length; i++) {
+            currentPart = parts[i];
+            parent[currentPart] = parent[currentPart] || {};
+            parent = parent[currentPart];
+        }
+        
+        return parent;
+    }
+        </pre>
+      </article>
+
+      <article>
+        <h3>Sample usage</h3>
+        <pre>
+    (function () {
+        var stream = namespace('com.appblast.stream');
+
+        stream.xhr = function () {
+            //implementation
+        };
+
+        stream.websocket = function () {
+            //implementation
+        };
+    }());
+        </pre>
+      </article>
+
+     <article>
+         <h2>Module pattern</h2>
+         <h3>Problem</h3>
+         <ul class="build">
+            <li>Data hiding</li>
+            <li>Encapsulation</li>
+            <li>Abstraction</li>
+            <li>Complexity</li>
+         </ul>
+     </article>
+     
+     <article>
+        <h3>Creating "classes"</h3>
+        <pre>
+    function Person(name) {
+        this.name = name;
+        this.talk = function () {
+            return this.name + " is talking!";
+        }
+    }
+    var person = new Person('Foo');
+    console.log(person.name); // "Foo"
+    console.log(person.talk()); // "Foo is talking!"
+        </pre>
+        <ul class="build green">
+            <li>A basic encapsulation</li>
+            <li>Abstraction</li>
+        </ul>
+        <ul class="build red">
+            <li>No data hiding</li>
+        </ul>
+     </article>
+
+     <article>
+        <h3>Scope</h3>
+        <pre>
+    function foo() {
+        console.log('It\'s me - foo.');
+        var bar = function () {
+            console.log('It\'s me - bar');
+        };
+        bar();
+    }
+    function foobar() {
+        console.log('It\'s me - foobar.');
+    }
+    foo();  //Hey it's me - foo
+            //Hey it's me - bar
+
+    bar();  //ReferenceError: bar is not defined
+    foobar();   //It's me - foobar
+        </pre>
+     </article>
+     
+     <article>
+        <h3>Module pattern</h3>
+        <pre>
+   var module = (function () {
+       function privateFoo() {
+           console.log('The private foo.');
+       }
+       return {
+           publicFoo: function () {
+               privateFoo();
+               console.log('The public foo.');
+           }
+       };
+   }());
+   module.publicFoo(); //'The private foo.'
+                       //'The public foo.'
+   module.privateFoo(); //TypeError: Object #&lt;Object&gt;
+                            // has no method 'privateFoo'
+        </pre>
+     </article>
+
+    <article>
+        <h3>Example</h3>
+        <pre>
+    var website = (function () {
+        var title = 'Default title';
+        return {
+            setTitle: function (t) {
+                title = t;
+                document.title = title;
+            },
+            getTitle: function () {
+                return title;
+            }
+        };
+    }());
+    website.setTitle('Sample title');
+    console.log(website.getTitle()); //'Sample title'
+        </pre>
+    </article>
+
+    <article>
+        <h3>Module pattern - Variation (1)</h3>
+        <pre>
+    var module = (function () {
+        function private() {
+            console.log('Private method');
+        }        
+        function public() {
+            console.log('Public method');
+        }
+        return {
+            public: public
+        };
+    }());
+        </pre>
+    </article>
+     
+    <article class="smaller">
+        <pre>
+            var module = (function () {
+                function public() {
+                    private();
+                }
+                function anotherPublic() {
+                    console.log('anotherPublic');
+                }
+                function private() {
+                    anotherPublic();
+                }
+                return {
+                    public: public,
+                    anotherPublic: anotherPublic
+                };
+            }());
+
+            module.public(); // 'anotherPublic'
+            module.anotherPublic = function () {
+                console.log('Brand new public');
+            };
+            module.public(); // 'anotherPublic'
+
+        </pre>
+    </article>
+
+    <article>
+        <h2>Publish/subscribe</h2>
+        <h3>Problem</h3>
+        <ul class="build">
+            <li>Loose coupling</li>
+            <li>Easy reuse</li>
+            <li>Maintainability</li>
+        </ul>
+    </article>
+
+    <article class="smaller">
+        <h3>Solution</h3>
+        <pre style="background: none; border: none; margin-top: -7px;">
+            var pubsub = {};
+            (function(q) {
+                var topics = {};
+                q.publish = function (topic, args) {
+                    if (!topics[topic]) {
+                        return false;
+                    }
+                    var subscribers = topics[topic],
+                        len = subscribers ? subscribers.length : 0;
+                    while (len--) {
+                        subscribers[len].call(null, topic, args);
+                    }
+                    return this;
+                };
+                q.subscribe = function (topic, func) {
+                    if (!topics[topic]) {
+                        topics[topic] = [];
+                    }
+                    topics[topic].push(func);
+                    return this;
+                };
+            }(pubsub));
+    </pre>
+    </article>
+
+    <article>
+        <h2>UI frameworks</h2>
+        <h3>Why we need them?</h3>
+        <ul class="build">
+            <li>Gives us a lot of UI controls</li>
+            <li>Saves us a lot of work</li>
+            <li>Gives us finished solution</li>
+        </ul>
+    </article>
+
+    <article>
+        <h2>UI frameworks</h2>
+        <h3>Few frameworks...</h2>
+        <ul class="build">
+            <li>jQuery UI</li>
+            <li>KendoUI</li>
+            <li>jQWidgets</li>
+            <li>Ignite UI</li>
+        </ul>
+    </article>
+
+    <article>
+        <h2>Validation</h2>
+        <h3>jQuery Validation</h2>
+        <br />
+        Why?
+        <ul class="build">
+            <li>Developed by Jörn Zaefferer (member of the team of jQuery)</li>
+            <li>Tested with jQuery 1.6.4, 1.7.2, 1.8.3, 1.9.0</li>
+            <li>Developed 2006 with many improvements since then</li>
+            <li>Many, many QUnit tests</li>
+        </ul>
+    </article>
+
+    <article>
+        Usage:
+        <pre style="max-height: 500px; overflow: auto;">
+    &lt;form&gt;
+        &lt;p&gt;&lt;label for=&quot;firstname&quot;&gt;First name: &lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;firstname&quot; id=&quot;firstname&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;label for=&quot;username&quot;&gt;Last name: &lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot; id=&quot;username&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;label for=&quot;password&quot;&gt;Password: &lt;/label&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot; id=&quot;password&quot; /&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;label for=&quot;agree&quot;&gt;Do you agree: &lt;/label&gt;&lt;input type=&quot;checkbox&quot; name=&quot;agree&quot; id=&quot;agree&quot; /&gt;&lt;/p&gt;
+    &lt;/form&gt;
+    &lt;script&gt;
+        $("#signupForm").validate({
+            rules: {
+                firstname: "required",
+                username: {
+                    required: true,
+                    minlength: 2
+                },
+                password: {
+                    required: true,
+                    minlength: 5
+                },
+                agree: "required"
+            },
+            messages: {
+                firstname: "Please enter your firstname",
+                username: {
+                    required: "Please enter a username",
+                    minlength: "Your username must consist of at least 2 characters"
+                },
+                password: {
+                    required: "Please provide a password",
+                    minlength: "Your password must be at least 5 characters long"
+                },
+                agree: "Please accept our policy"
+            }
+        });
+    &lt;/script&gt;
+        </pre>
+    </article>
+
+    <article>
+        <img src="./images/grunt-logo.png" alt="" style="margin: auto; display: block; margin-top: 70px;" />
+    </article>
+
+    <article>
+        <h2>Grunt</h2>
+        <ul class="build">
+            <li>Simply - a task runner</li>
+            <li>Automation - less work when you have repetitive tasks</li>
+            <li>Large community</li>
+            <li>Plugin for all you need</li>
+        </ul>
+    </article>
+
+    <article>
+        <h2>Automation for what?</h2>
+        <ul class="build">
+            <li>CSS sprites</li>
+            <li>Minification (css, html, js, images)</li>
+            <li>Concatenation</li>
+            <li>Linting (jslint, csslint, html validation)</li>
+        </ul>
+    </article>
+
+    <article>
+        <h2>Why we need all that?</h2>
+        <ul class="build">
+            <li>Performance</li>
+            <li>Performance</li>
+            <li>Performance</li>
+            <li>80-90% of the end-user response time depends on the frontend (ISBN 978-0-596-52930-7)</li>
+        </ul>
+    </article>
+
+    <article>
+        <h2>How to improve it?</h2>
+        <ul class="build">
+            <li>Reducing the number of the HTTP requests</li>
+            <li>Reducing file size</li>
+            <li>Use browser's cache</li>
+            <li>Few more tricks</li>
+        </ul>
+    </article>
+
+    <article>
+        <h2>Reducing the number of HTTP requests</h2>
+        <ul class="build">
+            <li>Combining images into sprites</li>
+            <li>Inline images/scripts (data:image/jpeg;base64, LzlqLzRBQ...)</li>
+            <li>Concatenation of files</li>
+            <li>Using <a href="https://www.mobify.com/blog/smartphone-localstorage-outperforms-browser-cache/" target="_blank">localStorage</a></li>
+        </ul>
+    </article>
+
+    <article>
+        <h2>Reducing file size</h2>
+        <ul class="build">
+            <li>Minify JavaScript (closure compiler, uglifyjs)
+                <pre> $ uglifyjs2 app.js > app.min.js</pre> 
+            </li>
+            <li>Minify HTML, CSS</li>
+            <li>Optimise images</li>
+            <li>Use GZIP
+                <pre>AddOutputFilterByType DEFLATE text/html text/plain text/xml</pre> 
+            </li>
+        </ul>
+    </article>
+
+    <article>
+        <h2>"DNS prefetching"</h2>
+        <pre>&lt;link rel="dns-prefetch" href="//www.domain1.com"&gt;</pre>
+    </article>
+
+    <article>
+        <h2>Put JavaScript in the bottom</h2>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;script src=&quot;http://domain1.com/script1.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;http://domain2.com/script1.js&quot;&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </article>
+
+    <article>
+        <h2>Put CSS in the top</h2>
+        <pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+  &lt;head&gt;
+    &lt;link rel=&quot;stylesheets&quot; href=&quot;http://domain1.com/styles1.css&quot; /&gt;
+    &lt;link rel=&quot;stylesheets&quot; href=&quot;http://domain2.com/styles1.css&quot; /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+        </pre>
+    </article>
+
+    <article>
+        <h2>Specify the size of the images</h2>
+        <ul class="build">
+            <li>Saves you from useless reflows/repaints</li>
+            <li>Easy...
+                <pre>
+   &lt;img src="img.png" style="width: 200px; height: 200px;" /&gt;
+                </pre>
+            </li>
+        </ul>
+    </article>
+
+    <article>
+        <h3>How to use Grunt?</h3>
+        <pre>
+   module.exports = function (grunt) {
+
+        grunt.loadNpmTasks('grunt-contrib-uglifyjs');
+
+        grunt.initConfig({
+            "uglify": {
+                dist: {
+                    files: {
+                        'build/scripts/main.js': ['scripts/app/app.js', 'scripts/app/**/*.js']
+                    }
+                }
+            }
+        });
+        grunt.registerTask('default', ['uglify']);
+
+   };
+        </pre>
+    </article>
+
+    <article>
+        <h3>Installing Grunt and tasks</h3>
+        <pre>
+            $ npm install -g grunt-cli
+            $ #...
+            $ npm install grunt-contrib-uglifyjs --save-dev
+        </pre>
+        <div>package.json</div>
+ <pre>    {
+      "name": "project-name",
+      "version": "1.0.0",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/user/repo.git"
+      },
+      "devDependencies": {
+        "grunt-contrib-uglify": "~0.2.2",
+      }
+    }</pre>
+    </article>
+
+    <article>
+        <h2>Running Grunt...</h2>
+        <pre style="margin-top: 200px;">
+          $ cd project_dir
+          $ grunt</pre>
+    </article>
+
+    <article>
+        <h1>Thank you!</h1>
+    </article>
+     
+    </section>
+
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-18060688-3']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+  </body>
+</html>
+
