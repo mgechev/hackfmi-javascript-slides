@@ -5,7 +5,6 @@
     <title>JavaScript Patterns</title>
 
     <meta charset='utf-8'>
-    <script src='src/slides.js'></script>
   </head>
   
   <body style='display: none'>
@@ -47,7 +46,8 @@
       <article>
         <h3>Few examples...</h3>
         <pre>
-            ',,' == new Array(3) //true
+            typeof new Array(3) //'object'
+            ',,' == new Array(3) 
 
             [1,2,3] == [1,2,3] //false, different references
             [1,2,3] === [1,2,3] //false, different references
@@ -67,9 +67,13 @@
       </article>
 
       <article>
+        <img src="images/omg-wtf-cat.jpg" alt="" style="display: block; margin: auto; margin-top: 60px;" />
+      </article>
+
+      <article>
         <h3>JavaScript is weird...</h3>
         <pre>
-            "Why am I a " + typeof + ""; // "Why am I a number"
+            "Why am I a " + typeof + ""; 
 
             //Why not...
             ([]+[][+[]])[+!+[]+!+[]+!+[]+!+[]]
@@ -83,8 +87,8 @@
                 };
             }
 
-            parseInt('wow'); //NaN
-            parseInt('fuck', 16); //15
+            parseInt('wow');
+            parseInt('fuck', 16); 
         </pre>        
       </article>
 
@@ -123,11 +127,10 @@
         </ul>
       </article>
 
-      <article class="smaller">
-        <h2>Classical</h2>
-        CoffeeScript
-        <br />
-        <pre>
+      <article class="fill current">
+        <h3>Classical</h3>
+        <img src="images/violin.jpg" alt="" />
+        <pre style="opacity: 0.9">
             function Person(name) {
                 this._name = name;
             }
@@ -147,7 +150,7 @@
             console.log(dev.languages[0]);  //"JavaScript"
         </pre>
       </article>
-
+      
       <article>
         <h2>Classical (+/-)</h2>
         <ul class="build green">
@@ -221,9 +224,8 @@
         </ul>
       </article>
 
-  
-      <article class="smaller"> 
-        <h2>Polymorphism</h2>
+      <article>
+        <h3>Polymorphism</h3>
         <pre>
             function Person(name) {
                 this._name = name;
@@ -275,8 +277,9 @@
         </ul>
       </article>
 
-      <article>
+      <article class="fill current">
        <h3>Sample solutions (2)</h3>
+       <img src="images/pollution.jpg" alt="" />
        <pre>
           //Variant 1
           function init() {
@@ -286,15 +289,16 @@
           }
           init();
        </pre>
-       <ul class="build">
+       <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type:none;">
           <li class="red">Polluting the global namespace (1 global)</li>
           <li class="red">Can be called multiple times</li>
           <li class="red">Ugly</li>
        </ul>
       </article>
 
-      <article>
+      <article class="fill current">
         <h3>Sample solution (3)</h3>
+        <img src="images/ugly-building.jpg" alt="" />
         <pre>
            //Variant 2
            var init = function () {
@@ -305,23 +309,24 @@
            init();
            delete window.init;
        </pre>
-        <ul class="build">
+       <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type:none;">
             <li class="red">Ugly</li>
         </ul>
       </article>
 
-      <article>
+      <article class="fill current">
         <h3>Solution</h3>
+        <img src="images/clean.jpg" alt="" />
         <pre>
            ;(function (w, d) {
                //initialization
            }(window, document));
         </pre>
-        <ul class="build">
+        <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type:none;">
             <li class="green">Fixing all issues</li>
             <li class="red">Hard to understand</li>
         </ul>
-        <ul class="build">
+        <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type:none;">
             <li>And yes, we <a href="http://jsdrama.com/" target="_blank">*always*</a> need the semicolons</li>
         </ul>
       </article>
@@ -652,9 +657,10 @@
         </ul>
     </article>
 
-    <article>
-        <h2>Why we need all that?</h2>
-        <ul class="build">
+    <article class="fill current">
+        <h3>Why we need all that?</h3>
+        <img src="images/turbo.jpg" alt="" />
+        <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type: none;">
             <li>Performance</li>
             <li>Performance</li>
             <li>Performance</li>
@@ -799,19 +805,7 @@
      
     </section>
 
-    <script type="text/javascript">
-
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-18060688-3']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-
-    </script>
+    <script src='src/slides.js'></script>
   </body>
 </html>
 
