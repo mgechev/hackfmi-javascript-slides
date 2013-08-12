@@ -4,7 +4,23 @@
   <head>
     <title>JavaScript Patterns</title>
 
-    <meta charset='utf-8'>
+    <meta charset='utf-8'/>
+    <style>
+        .bg-text {
+            background-color: rgba(255, 255, 255, .7);
+            color: #000;
+        }
+        ul.bg-text {
+            padding: 15px;
+            border-radius: 15px;
+            list-style-type: none;
+            display: list-item;
+            list-style-position: inside;
+        }
+        ul.bg-text li:before {
+            content: '';
+        }
+    </style>
   </head>
   
   <body style='display: none'>
@@ -289,7 +305,7 @@
           }
           init();
        </pre>
-       <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type:none;">
+       <ul class="build bg-text">
           <li class="red">Polluting the global namespace (1 global)</li>
           <li class="red">Can be called multiple times</li>
           <li class="red">Ugly</li>
@@ -309,7 +325,7 @@
            init();
            delete window.init;
        </pre>
-       <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type:none;">
+       <ul class="build bg-text">
             <li class="red">Ugly</li>
         </ul>
       </article>
@@ -322,11 +338,11 @@
                //initialization
            }(window, document));
         </pre>
-        <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type:none;">
+        <ul class="build bg-text">
             <li class="green">Fixing all issues</li>
             <li class="red">Hard to understand</li>
         </ul>
-        <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type:none;">
+        <ul class="build bg-text">
             <li>And yes, we <a href="http://jsdrama.com/" target="_blank">*always*</a> need the semicolons</li>
         </ul>
       </article>
@@ -660,7 +676,7 @@
     <article class="fill current">
         <h3>Why we need all that?</h3>
         <img src="images/turbo.jpg" alt="" />
-        <ul class="build" style="background-color: rgba(255, 255, 255, .6); list-style-type: none;">
+        <ul class="build bg-text">
             <li>Performance</li>
             <li>Performance</li>
             <li>Performance</li>
