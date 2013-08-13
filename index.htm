@@ -50,15 +50,15 @@
             typeof new Array(3) //'object'
             ',,' == new Array(3) 
 
-            [1,2,3] == [1,2,3] //false, different references
-            [1,2,3] === [1,2,3] //false, different references
-            [1,2,3] &gt; [1,2,3] //false
-            [1,2,3] &lt; [1,2,3] //false
-            [1,2,3] &gt;= [1,2,3] //true
-            [1,2,3] &lt;= [1,2,3] //true
+            var foo = new String('foo');
+            var fooClone = new String('foo');
+            foo == fooClone
+            foo === fooClone
+            foo &gt;= fooClone
+            foo &lt;= fooClone
 
             typeof undefined === 'undefined' //true
-            typeof null      === 'object' //true
+            typeof null      === 'object'
             
             +!+[] //1
 
@@ -561,6 +561,47 @@
     </article>
 
     <article>
+        <h3>Module + publish/subscribe</h3>
+        <pre style="overflow: auto; max-height: 540px;">
+   namespace('app.ui.project-form', function () {
+       return {
+           init: function (app) {
+               if ($('#project-form').validate()) {
+                   app.publish('ui.project-form.published', {
+                       mol: $('#mol-input').val(),
+                       //...
+                   });
+               }
+           }
+       };
+   });
+
+   namespace('app.system.http', function () {
+       return {
+           init: function (app) {
+               app.subscribe('system.http.post', this.post);
+               app.subscribe('system.http.get', this.get);
+           },
+           post: function (data) {
+               $.ajax({
+                   type: 'post',
+                   data: data,
+                   //...
+               });
+           },
+           get: function (data) {
+               $.ajax({
+                   type: 'post',
+                   data: data,
+                   //...
+               });
+           }
+       };
+   });
+        </pre>
+    </article>
+
+    <article>
         <h2>UI frameworks</h2>
         <h3>Why we need them?</h3>
         <ul class="build">
@@ -745,8 +786,7 @@
             <li>Saves you from useless reflows/repaints</li>
             <li>Easy...
                 <pre>
-   &lt;img src="img.png" style="width: 200px; height: 200px;" /&gt;
-                </pre>
+   &lt;img src="img.png" style="width: 200px; height: 200px;" /&gt;</pre>
             </li>
         </ul>
     </article>
@@ -769,8 +809,7 @@
         });
         grunt.registerTask('default', ['uglify']);
 
-   };
-        </pre>
+   };</pre>
     </article>
 
     <article>
@@ -778,8 +817,7 @@
         <pre>
             $ npm install -g grunt-cli
             $ #...
-            $ npm install grunt-contrib-uglifyjs --save-dev
-        </pre>
+            $ npm install grunt-contrib-uglifyjs --save-dev</pre>
         <div>package.json</div>
  <pre>    {
       "name": "project-name",
