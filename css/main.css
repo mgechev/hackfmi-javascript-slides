@@ -1,0 +1,15 @@
+.bg-text {
+    background-color: rgba(255, 255, 255, .7);
+    color: #000;
+}
+ul.bg-text {
+    padding: 15px;
+    border-radius: 15px;
+    list-style-type: none;
+    display: list-item;
+    list-style-position: inside;
+}
+ul.bg-text li:before {
+    content: '';
+}
+
