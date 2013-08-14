@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <title>JavaScript Patterns</title>
+    <title>JavaScript Good Practices</title>
 
     <meta charset='utf-8'/>
     <link rel="stylesheet" href="./css/main.css" />
@@ -14,6 +14,9 @@
       
       <article>
         <h1>JavaScript Good Practices</h1>
+        <h5>...or how to stay away from the weird parts<br />
+        of that weird language...
+        </h5>
         <h4>Minko Gechev</h4>
       </article>
 
@@ -143,7 +146,7 @@
                 Person.call(this, name);
                 this.languages = languages;
             }
-            Developer.prototype = new Person();
+            Developer.prototype = new Person(); //Person.prototype
 
             var dev = new Developer('foo', ['JavaScript', 'Perl', 'Java']);
             console.log(dev.getName());     //"foo"
