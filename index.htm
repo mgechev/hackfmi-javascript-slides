@@ -174,7 +174,7 @@
             }
             function Developer(name, languages) {
                 var _languages = languages;
-                Person.call(name);
+                Person.call(this, name);
                 this.getLanguages = function () {
                     return _languages;
                 };
@@ -613,7 +613,7 @@
 
     <article>
         <h2>UI frameworks</h2>
-        <h3>Few frameworks...</h2>
+        <h3>Few frameworks...</h3>
         <ul class="build">
             <li>jQuery UI</li>
             <li>KendoUI</li>
@@ -624,7 +624,7 @@
 
     <article>
         <h2>Validation</h2>
-        <h3>jQuery Validation</h2>
+        <h3>jQuery Validation</h3>
         <br />
         Why?
         <ul class="build">
